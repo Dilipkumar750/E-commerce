@@ -1,45 +1,237 @@
-import React, { useContext, useRef, useState } from 'react'
-import './Navbar.css'
-import { Link } from 'react-router-dom'
-import logo from '../Assets/logo.png'
-import cart_icon from '../Assets/cart_icon.png'
-import { ShopContext } from '../../Context/ShopContext'
-import nav_dropdown from '../Assets/nav_dropdown.png'
+import React, { useContext, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import logo from "../Assets/logo.png";
+import cart_icon from "../Assets/cart_icon.png";
+import { ShopContext } from "../../Context/ShopContext";
+import nav_dropdown from "../Assets/nav_dropdown.png";
 
 const Navbar = () => {
-
-  let [menu,setMenu] = useState("shop");
-  const {getTotalCartItems} = useContext(ShopContext);
-
+  let [menu, setMenu] = useState("shop");
+  const { getTotalCartItems } = useContext(ShopContext);
   const menuRef = useRef();
 
   const dropdown_toggle = (e) => {
-    menuRef.current.classList.toggle('nav-menu-visible');
-    e.target.classList.toggle('open');
-  }
+    menuRef.current.style.display =
+      menuRef.current.style.display === "flex" ? "none" : "flex";
+    e.target.style.transform =
+      e.target.style.transform === "rotate(90deg)" ? "rotate(-90deg)" : "rotate(90deg)";
+  };
 
   return (
-    <div className='nav'>
-      <Link to='/' onClick={()=>{setMenu("shop")}} style={{ textDecoration: 'none' }} className="nav-logo">
-        <img src={logo} alt="logo" />
-        <p>STONEY</p>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        boxShadow: "0 1px 3px -2px black",
+        padding: "15px 70px",
+        position: "relative",
+      }}
+    >
+      {/* Logo */}
+      <Link
+        to="/"
+        onClick={() => setMenu("shop")}
+        style={{
+          textDecoration: "none",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+        }}
+      >
+        <img src={logo} alt="logo" style={{ width: "45px" }} />
+        <p style={{ color: "#171717", fontSize: "28px", fontWeight: "600" }}>
+          STONEY
+        </p>
       </Link>
-      <img onClick={dropdown_toggle} className='nav-dropdown' src={nav_dropdown} alt="" />
-      <ul ref={menuRef} className="nav-menu">
-        <li onClick={()=>{setMenu("shop")}}><Link to='/' style={{ textDecoration: 'none' }}>Shop</Link>{menu==="shop"?<hr/>:<></>}</li>
-        <li onClick={()=>{setMenu("mens")}}><Link to='/mens' style={{ textDecoration: 'none' }}>Men</Link>{menu==="mens"?<hr/>:<></>}</li>
-        <li onClick={()=>{setMenu("womens")}}><Link to='/womens' style={{ textDecoration: 'none' }}>Women</Link>{menu==="womens"?<hr/>:<></>}</li>
-        <li onClick={()=>{setMenu("kids")}}><Link to='/kids' style={{ textDecoration: 'none' }}>Kids</Link>{menu==="kids"?<hr/>:<></>}</li>
-      </ul>
-      <div className="nav-login-cart">
-        {localStorage.getItem('auth-token')
-        ?<button onClick={()=>{localStorage.removeItem('auth-token');window.location.replace("/");}}>Logout</button>
-        :<Link to='/login' style={{ textDecoration: 'none' }}><button>Login</button></Link>}
-        <Link to="/cart"><img src={cart_icon} alt="cart"/></Link>
-        <div className="nav-cart-count">{getTotalCartItems()}</div>
-      </div>
-    </div>
-  )
-}
 
-export default Navbar
+      {/* Dropdown Menu (For Mobile) */}
+      <img
+        onClick={dropdown_toggle}
+        src={nav_dropdown}
+        alt=""
+        style={{
+          display: "none",
+          width: "30px",
+          cursor: "pointer",
+          transition: "0.5s",
+        }}
+        className="nav-dropdown"
+      />
+
+      {/* Navigation Links */}
+      <ul
+        ref={menuRef}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          listStyle: "none",
+          gap: "40px",
+          color: "#626262",
+          fontSize: "16px",
+          fontWeight: "500",
+        }}
+      >
+        {["shop", "mens", "womens", "kids"].map((item) => (
+          <li
+            key={item}
+            onClick={() => setMenu(item)}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "3px",
+              cursor: "pointer",
+            }}
+          >
+            <Link to={`/${item === "shop" ? "" : item}`} style={{ textDecoration: "none" }}>
+              {item.charAt(0).toUpperCase() + item.slice(1)}
+            </Link>
+            {menu === item ? (
+              <hr
+                style={{
+                  border: "none",
+                  width: "80%",
+                  height: "3px",
+                  borderRadius: "10px",
+                  background: "#FF4141",
+                }}
+              />
+            ) : null}
+          </li>
+        ))}
+      </ul>
+
+      {/* Login & Cart */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "30px",
+        }}
+      >
+        {localStorage.getItem("auth-token") ? (
+          <button
+            onClick={() => {
+              localStorage.removeItem("auth-token");
+              window.location.replace("/");
+            }}
+            style={{
+              width: "130px",
+              height: "45px",
+              outline: "none",
+              border: "1px solid #7a7a7a",
+              borderRadius: "75px",
+              color: "#515151",
+              fontSize: "20px",
+              fontWeight: "500",
+              background: "white",
+              cursor: "pointer",
+              transition: "0.3s",
+            }}
+            onMouseDown={(e) => (e.target.style.background = "#f3f3f3")}
+            onMouseUp={(e) => (e.target.style.background = "white")}
+          >
+            Logout
+          </button>
+        ) : (
+          <Link to="/login" style={{ textDecoration: "none" }}>
+            <button
+              style={{
+                width: "130px",
+                height: "45px",
+                outline: "none",
+                border: "1px solid #7a7a7a",
+                borderRadius: "75px",
+                color: "#515151",
+                fontSize: "20px",
+                fontWeight: "500",
+                background: "white",
+                cursor: "pointer",
+              }}
+              onMouseDown={(e) => (e.target.style.background = "#f3f3f3")}
+              onMouseUp={(e) => (e.target.style.background = "white")}
+            >
+              Login
+            </button>
+          </Link>
+        )}
+
+        {/* Cart */}
+        <Link to="/cart">
+          <img src={cart_icon} alt="cart" style={{ width: "35px" }} />
+        </Link>
+        <div
+          style={{
+            width: "18px",
+            height: "18px",
+            borderRadius: "50%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "-30px",
+            marginLeft: "-40px",
+            fontSize: "14px",
+            background: "red",
+            color: "white",
+          }}
+        >
+          {getTotalCartItems()}
+        </div>
+      </div>
+
+      {/* Responsive Styles */}
+      <style>
+        {`
+        @media (max-width: 900px) {
+          .nav-menu {
+            gap: 15px;
+          }
+        }
+
+        @media (max-width: 750px) {
+          .nav-dropdown {
+            display: block !important;
+            rotate: -90deg;
+            transition: 0.5s;
+          } 
+
+          .nav-menu {
+            display: none;
+            height: 80px;
+            width: 100%;
+            position: absolute;
+            background-color: white;
+            justify-content: center;
+            top: 60px;
+            left: 0;
+          }
+
+          .nav-cart-count {
+            margin-left: -25px;
+          }
+        }
+
+        @media (max-width: 500px) {
+          .nav-logo img {
+            width: 30px;
+          }
+          .nav-logo p {
+            font-size: 18px;
+          }
+          .nav-menu {
+            height: 70px;
+            top: 60px;
+          }
+          .nav-login-cart {
+            transform: scale(0.8);
+          } 
+        }
+        `}
+      </style>
+    </div>
+  );
+};
+
+export default Navbar;
